@@ -3,13 +3,12 @@ const router = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const verify = require("./verify_token");
-const fs = require('fs');
 
-router.get("/:name", verify, (req, res) => {
+router.get("/token", (req, res) => {
     try {
         User.findOne({userName: req.params.name}, (err, user) => {
             if (err) {
-                console.log(err);
+                console.error(err);
                 res.status(400).json({status: 0, message: err});
             }
             console.log(user);
@@ -20,10 +19,32 @@ router.get("/:name", verify, (req, res) => {
             }
         });
     } catch (error) {
+        console.error(error);
+        res.status(400).json({status: 0, message: error});
+    }
+});
+
+router.get("/:name", (req, res) => {
+    try {
+        User.findOne({userName: req.params.name}, (err, user) => {
+            if (err) {
+                console.log(err);
+                res.status(400).json({status: 0, message: err});
+            }
+            console.log(user);
+            if (user === null) {
+                res.status(404).json({status: 0, message: "User not found"});
+            } else {
+                res.status(200).json({status: 1, message: user});
+            }
+        });
+    } catch (error) {
         console.log(error);
         res.status(400).json({status: 0, message: error});
     }
 });
+
+
 
 router.post("/login", async (req, res) => {
     try {
@@ -51,7 +72,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/signup", async (req, res) => {
     try {
         let a1, a2;
         a1 = await User.findOne({userEmail: req.body.userEmail});
@@ -68,27 +89,6 @@ router.post("/create", async (req, res) => {
                 message: "User alredy exists please use a different username",
             });
         } else {
-            // let base64Data = req.body.userPhoto.replace(/^data:image\/png;base64,/, "");
-
-            // if (!fs.existsSync('../images')) {
-            //     await fs.mkdir('../images', (err) => {
-            //         if (err) {
-            //             console.log(err);
-            //         } else console.log("Directory created");
-            //     });
-            //     await fs.writeFile(`../images/${req.body.userName}.png`, base64Data, 'base64', (err) => {
-            //         if (err) {
-            //             console.log(err);
-            //         } else console.log("The file was saved!");
-            //     });
-            // } else {
-            //     await fs.writeFile(`../images/${req.body.userName}.png`, base64Data, 'base64', (err) => {
-            //         if (err) {
-            //             console.log(err);
-            //         } else console.log("The file was saved!");
-            //     });
-            // }
-            req.body.userPhoto = `https://festify-iiitl.herokuapp.com/images/${req.body.userName}.png`;
             await User.create(req.body, (err, user) => {
                 if (err) {
                     console.log(err);
