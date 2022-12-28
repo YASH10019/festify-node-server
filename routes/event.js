@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const event = require("../models/event");
 const bodyparser = require("body-parser");
-const verify = require("./verify_token");
+//const verify = require("./verify_token");
 express().use(bodyparser.json())
 
 router.get("/all", (req, res) => {

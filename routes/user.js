@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
-const jwt = require("jsonwebtoken");
-const verify = require("./verify_token");
+// const jwt = require("jsonwebtoken");
+// const verify = require("./verify_token");
 
 router.get("/token", (req, res) => {
     try {
@@ -52,20 +52,20 @@ router.post("/login", async (req, res) => {
         let password = await req.body.password;
         let user;
         if (usernameOrEmail.includes("@")) {
-            user = await User.findOne({userEmail: usernameOrEmail, userPassword: password});
+            user =  User.findOne({userEmail: usernameOrEmail, userPassword: password});
         } else {
-            user = await User.findOne({userName: usernameOrEmail, userPassword: password});
+            user =  User.findOne({userName: usernameOrEmail, userPassword: password});
         }
         if (user === null) {
             res.status(404).json({status: 0, message: "User not found"});
         } else
-            jwt.sign({user}, process.env.TOKEN_SECRET, (err, token) => {
-                if (err) {
-                    console.log(err);
-                    res.status(400).json({status: 0, message: err});
-                }
-                res.header('auth-token', token).status(200).json({status: 1, message: "User is logged in"});
-            });
+            // jwt.sign({user}, process.env.TOKEN_SECRET, (err, token) => {
+            //     if (err) {
+            //         console.log(err);
+            //         res.status(400).json({status: 0, message: err});
+            //     }
+                res.status(200).json({status: 1, message: "User is logged in"});
+           // });
     } catch (error) {
         console.log(error);
         res.status(400).json({status: 0, message: error});
@@ -75,8 +75,8 @@ router.post("/login", async (req, res) => {
 router.post("/signup", async (req, res) => {
     try {
         let a1, a2;
-        a1 = await User.findOne({userEmail: req.body.userEmail});
-        a2 = await User.findOne({userName: req.body.userName});
+        a1 =  User.findOne({userEmail: req.body.userEmail});
+        a2 =  User.findOne({userName: req.body.userName});
 
         if (a1 !== null) {
             res.status(400).json({
